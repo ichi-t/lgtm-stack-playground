@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  agent:
+    image: grafana/agent:v0.32.0
+    command:
+      - -config.file=/etc/agent.yaml
+    volumes:
+      - ./agent.yaml:/etc/agent.yaml
+    environment:
+      HOSTNAME: agent
+      REMOTE_WRITE_HOST: mimir:9009
+
+  grafana:
+    image: grafana/grafana:9.4.2
+    volumes:
+      - ./grafana-datasource.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    ports:
+      - 3000:3000
+
+  mimir:
+    command:
+      - -config.file=/etc/mimir.yaml
+    volumes:
+      - ./mimir.yaml:/etc/mimir.yaml
+    image: grafana/mimir:2.6.0
+    ports:
+      - 9009:9009
+
+  tempo:
+    image: grafana/tempo:2.0.0
+
+    command:
+      - -config.file=/etc/tempo.yaml
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
